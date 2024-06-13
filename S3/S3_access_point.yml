@@ -1,0 +1,10 @@
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "mys3bucket${AWS::AccountId}"
+
+  MyS3AccessPoint:
+    Type: AWS::S3::AccessPoint
+    Properties:
+      Bucket: !Ref MyS3Bucket

@@ -1,0 +1,43 @@
+Resources:
+  # S3 simple bucket
+  MySimpleS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "mysimplebucket${AWS::AccountId}"
+
+  # S3 bucket server side encryption + key management system (SSE + KMS)
+
+  MyBucketKMSencrypted:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "mys3kmsencrypted${AWS::AccountId}"
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+
+  # S3 bucket server side encryption + client management
+
+  MyBucketSSECEncrypted:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "mysbucketssecencrypted${AWS::AccountId}"
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  MyBucketSSECEncryptedPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyBucketSSECEncrypted
+      PolicyDocument: 
+        Statement: 
+          - Effect: Deny
+            Principal: "*"
+            Action: "s3:PutObject"
+            Resource: !Sub "${MyBucketSSECEncrypted.Arn}/*"
+            Condition:
+              StringNotEquals:
+                s3:x-amz-server-side-encryption: "AES256"
+          
